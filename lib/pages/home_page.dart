@@ -1,15 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:todo/utils/todo_List.dart';
 
-// ignore: must_be_immutable
-class HomePage extends StatelessWidget {
-  HomePage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final _controller = TextEditingController();
   List toDoList = [
     ['Learn Flutter', false],
     ['Drink Cofee', false],
     ['Drink Cofee', false],
   ];
+
+  checkBoxChanged(int index) {
+    setState(() {
+      toDoList[index][1] = !toDoList[index][1];
+    });
+  }
+
+  void saveNewTask() {
+    setState(() {
+      toDoList.add([_controller.text, false]);
+      _controller.clear();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +46,38 @@ class HomePage extends StatelessWidget {
           itemBuilder: (BuildContext context, index) {
             return TodoList(
               taskName: toDoList[index][0],
+              taskCompleted: toDoList[index][1],
+              onChanged: (value) => checkBoxChanged(index),
             );
           }),
+      floatingActionButton: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                    hintText: 'Add New Task',
+                    filled: true,
+                    fillColor: Colors.deepPurple.shade200,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.deepPurple),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.deepPurple),
+                      borderRadius: BorderRadius.circular(15),
+                    )),
+              ),
+            ),
+          ),
+          FloatingActionButton(
+            onPressed: saveNewTask,
+            child: const Icon(Icons.add),
+          ),
+        ],
+      ),
     );
   }
 }
